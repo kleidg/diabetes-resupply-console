@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AdaptHealth Diabetes Care | Resupply Order Console</title>
+<style>
+  :root{
+    --ah-teal:#00A99D;
+    --ah-blue:#0B5FA5;
+    --ah-blue-dark:#063D66;
+    --ah-050:#EEF7F8;
+    --ch-red:#EE0000;
+    --ch-red-dark:#B30000;
+    --ch-black:#1A1A1A;
+    --ink:#1F2328;
+    --slate:#5B6570;
+    --line:#E2E6EA;
+    --success:#1B7A4A;
+    --success-bg:#E7F4EC;
+    --warn:#9A5B00;
+    --warn-bg:#FDF1DE;
+    --info-bg:#EAF2FB;
+    --white:#FFFFFF;
+    --radius:10px;
+    --shadow:0 1px 2px rgba(11,95,165,.06), 0 6px 20px rgba(11,95,165,.08);
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:linear-gradient(180deg,var(--ah-050) 0%, #FFFFFF 260px);
+    color:var(--ink);
+    font-size:14px;
+    line-height:1.45;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  .top-ribbon{
+    height:5px;
+    background:linear-gradient(90deg, var(--ah-blue) 0%, var(--ah-teal) 45%, var(--ch-red) 100%);
+  }
+
+  .app{
+    max-width:1040px;
+    margin:0 auto;
+    padding:0 20px 60px;
+  }
+
+  /* ---------- Header ---------- */
+  header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:20px 4px 16px;
+    border-bottom:1px solid var(--line);
+    margin-bottom:18px;
+    flex-wrap:wrap;
+    gap:14px;
+  }
+  .co-brand{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    flex-wrap:wrap;
+  }
+  .brand-block{display:flex; align-items:center; gap:9px;}
+  .brand-block svg{display:block;}
+  .adapt-word{font-size:19px; font-weight:800; letter-spacing:-0.2px;}
+  .adapt-word .a1{color:var(--ah-teal);}
+  .adapt-word .a2{color:var(--ah-blue);}
+  .cardinal-word{font-size:17px; font-weight:800; color:var(--ch-black); letter-spacing:-0.1px;}
+  .cardinal-word span{color:var(--ch-red);}
+  .brand-divider{
+    width:1px; height:30px; background:var(--line); flex:none;
+  }
+  .co-brand-tag{
+    font-size:11px;
+    color:var(--slate);
+    margin-top:2px;
+    letter-spacing:.2px;
+  }
+  .header-right{display:flex; flex-direction:column; align-items:flex-end; gap:8px;}
+  .call-status{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    background:var(--success-bg);
+    color:var(--success);
+    border-radius:20px;
+    padding:6px 14px 6px 10px;
+    font-size:12.5px;
+    font-weight:600;
+    white-space:nowrap;
+  }
+  .pulse-dot{
+    width:8px;height:8px;border-radius:50%;
+    background:var(--success);
+    position:relative;
+  }
+  .pulse-dot::after{
+    content:"";
+    position:absolute; inset:-4px;
+    border-radius:50%;
+    border:1.5px solid var(--success);
+    animation:pulse 1.8s ease-out infinite;
+  }
+  @keyframes pulse{
+    0%{transform:scale(0.6);opacity:0.9;}
+    100%{transform:scale(1.9);opacity:0;}
+  }
+  @media (prefers-reduced-motion: reduce){ .pulse-dot::after{animation:none;} }
+
+  .page-title{margin:2px 0 18px;}
+  .page-title h1{font-size:20px; margin:0 0 3px; font-weight:800; color:var(--ink);}
+  .page-title p{margin:0; font-size:12.8px; color:var(--slate);}
+
+  /* ---------- Case meta strip ---------- */
+  .meta-strip{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:12px;
+    margin-bottom:18px;
+  }
+  @media (max-width:720px){ .meta-strip{grid-template-columns:repeat(2,1fr);} }
+  .meta-item{
+    background:var(--white);
+    border:1px solid var(--line);
+    border-radius:9px;
+    padding:10px 12px;
+  }
+  .meta-item .k{font-size:10.5px; text-transform:uppercase; letter-spacing:.5px; color:var(--slate); margin-bottom:3px;}
+  .meta-item .v{font-size:13.5px; font-weight:700; color:var(--ink);}
+
+  /* ---------- Cards / grid ---------- */
+  .grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:16px;
+    margin-bottom:16px;
+  }
+  @media (max-width:760px){ .grid{grid-template-columns:1fr;} }
+  .card{
+    background:var(--white);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
+    padding:18px 20px 20px;
+    margin-bottom:16px;
+  }
+  .grid > .card{margin-bottom:0;}
+  .card h2{
+    font-size:11.5px;
+    text-transform:uppercase;
+    letter-spacing:0.8px;
+    color:var(--ah-blue);
+    font-weight:700;
+    margin:0 0 14px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .card h2::before{
+    content:"";
+    width:4px;height:14px;
+    background:var(--ah-teal);
+    border-radius:2px;
+    display:inline-block;
+  }
+  .card h2 .h2-sub{
+    text-transform:none;
+    letter-spacing:0;
+    color:var(--slate);
+    font-weight:500;
+    font-size:12px;
+    margin-left:4px;
+  }
+
+  .caller-name{font-size:19px; font-weight:700; color:var(--ink); margin:0 0 3px;}
+  .caller-sub{font-size:12.5px; color:var(--slate); margin-bottom:14px;}
+
+  .verify-badge{
+    display:flex;
+    align-items:flex-start;
+    gap:10px;
+    background:var(--success-bg);
+    border:1px solid #C7E6D2;
+    border-radius:8px;
+    padding:10px 12px;
+    margin-bottom:16px;
+  }
+  .verify-badge .icon{
+    width:20px;height:20px;
+    flex:none;
+    border-radius:50%;
+    background:var(--success);
+    display:flex;align-items:center;justify-content:center;
+    margin-top:1px;
+  }
+  .verify-badge .icon svg{width:12px;height:12px;}
+  .verify-badge .text .t1{font-weight:700; color:var(--success); font-size:12.8px;}
+  .verify-badge .text .t2{color:#3E6B52; font-size:11.5px; margin-top:1px;}
+
+  dl.info{margin:0; display:grid; grid-template-columns:110px 1fr; row-gap:9px; column-gap:8px;}
+  dl.info dt{font-size:11px; color:var(--slate); text-transform:uppercase; letter-spacing:0.4px; padding-top:1px;}
+  dl.info dd{margin:0; font-size:13.5px; color:var(--ink); font-weight:500; word-break:break-word;}
+  dl.info dd a{color:var(--ah-blue); text-decoration:none;}
+  dl.info dd a:hover{text-decoration:underline;}
+
+  .badge{display:inline-flex; align-items:center; gap:6px; font-size:11.5px; font-weight:700; padding:4px 10px; border-radius:20px;}
+  .badge.low{background:var(--success-bg); color:var(--success);}
+  .badge.med{background:var(--warn-bg); color:var(--warn);}
+  .badge.info{background:var(--info-bg); color:var(--ah-blue);}
+  .badge.red{background:#FDEBEC; color:var(--ch-red-dark);}
+
+  /* Insurance coverage panels */
+  .coverage-panel{
+    border:1px solid var(--line);
+    border-radius:9px;
+    padding:14px 16px;
+    margin-bottom:14px;
+    background:var(--ah-050);
+  }
+  .coverage-panel:last-of-type{margin-bottom:0;}
+  .coverage-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; gap:10px; flex-wrap:wrap;}
+  .coverage-title{font-size:13.8px; font-weight:700; color:var(--ink);}
+  .coverage-sub{display:block; font-size:11px; font-weight:600; color:var(--slate); text-transform:uppercase; letter-spacing:0.3px; margin-top:2px;}
+  dl.coverage-meta{margin:0; display:grid; grid-template-columns:130px 1fr; row-gap:7px; column-gap:8px;}
+  dl.coverage-meta dt{font-size:11px; color:var(--slate); text-transform:uppercase; letter-spacing:0.4px; padding-top:1px;}
+  dl.coverage-meta dd{margin:0; font-size:13px; color:var(--ink); font-weight:500;}
+  dl.coverage-meta dd.mono{font-family:"SFMono-Regular",Consolas,Menlo,monospace; letter-spacing:0.2px;}
+
+  /* Address update */
+  .addr-compare{display:grid; grid-template-columns:1fr auto 1fr; gap:14px; align-items:center;}
+  @media (max-width:640px){ .addr-compare{grid-template-columns:1fr;} .addr-arrow{transform:rotate(90deg); margin:2px 0;} }
+  .addr-box{border:1px solid var(--line); border-radius:9px; padding:12px 14px;}
+  .addr-box.old{background:#FAFAFA;}
+  .addr-box.new{background:var(--success-bg); border-color:#C7E6D2;}
+  .addr-box .lbl{font-size:10.5px; text-transform:uppercase; letter-spacing:.5px; color:var(--slate); margin-bottom:6px; font-weight:700;}
+  .addr-box.old .lbl{text-decoration:line-through; text-decoration-color:#C7CBD1;}
+  .addr-box .addr{font-size:13.8px; font-weight:600; color:var(--ink); line-height:1.5;}
+  .addr-box.old .addr{color:#8A8F96; text-decoration:line-through;}
+  .addr-arrow{display:flex; align-items:center; justify-content:center; color:var(--ah-blue);}
+  .reason-note{margin-top:12px; font-size:12.5px; color:var(--slate);}
+  .reason-note strong{color:var(--ink);}
+
+  /* Order table */
+  table.order-items{width:100%; border-collapse:collapse; margin-top:4px;}
+  table.order-items th{
+    text-align:left; font-size:10.5px; text-transform:uppercase; letter-spacing:.5px;
+    color:var(--slate); font-weight:700; padding:0 10px 8px 0; border-bottom:1px solid var(--line);
+  }
+  table.order-items td{padding:10px 10px 10px 0; border-bottom:1px solid var(--line); font-size:13.5px; vertical-align:top;}
+  table.order-items tr:last-child td{border-bottom:none;}
+  .item-name{font-weight:600; color:var(--ink);}
+  .item-sub{font-size:11.5px; color:var(--slate); margin-top:2px;}
+  .qty-pill{
+    display:inline-flex; align-items:center; justify-content:center;
+    min-width:28px; padding:2px 8px; border-radius:20px;
+    background:var(--info-bg); color:var(--ah-blue); font-weight:700; font-size:12.5px;
+  }
+
+  .order-meta-row{display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin:16px 0 4px;}
+  @media (max-width:760px){ .order-meta-row{grid-template-columns:repeat(2,1fr);} }
+  .order-meta-row .k{font-size:10.5px; text-transform:uppercase; letter-spacing:.5px; color:var(--slate); margin-bottom:4px;}
+  .order-meta-row .v{font-size:13.8px; font-weight:700; color:var(--ink);}
+  .order-meta-row .v.mono{font-family:"SFMono-Regular",Consolas,Menlo,monospace;}
+
+  .delivery-eta{
+    margin-top:16px; padding:12px 14px; border-radius:9px;
+    background:var(--info-bg); border:1px solid #CFE0F5;
+    display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;
+  }
+  .delivery-eta .t1{font-size:13px; font-weight:700; color:var(--ah-blue-dark);}
+  .delivery-eta .t2{font-size:12px; color:var(--slate);}
+
+  .history-table{width:100%; border-collapse:collapse; margin-top:14px; font-size:12.8px;}
+  .history-table th{text-align:left; font-size:10.5px; text-transform:uppercase; letter-spacing:.4px; color:var(--slate); padding:0 8px 8px 0; border-bottom:1px solid var(--line);}
+  .history-table td{padding:9px 8px 9px 0; border-bottom:1px solid var(--line); color:var(--ink);}
+  .history-table tr:last-child td{border-bottom:none;}
+  .history-table tr.current td{font-weight:700;}
+
+  /* Script checklist */
+  .progress-wrap{display:flex; align-items:center; gap:12px; margin-bottom:18px;}
+  .progress-bar{flex:1; height:8px; border-radius:6px; background:var(--line); overflow:hidden;}
+  .progress-bar > div{height:100%; background:linear-gradient(90deg,var(--ah-teal),var(--ah-blue)); border-radius:6px; transition:width .3s ease;}
+  .progress-label{font-size:12px; font-weight:700; color:var(--ah-blue); white-space:nowrap;}
+
+  .script-step{
+    border:1px solid var(--line);
+    border-radius:9px;
+    padding:13px 14px;
+    margin-bottom:12px;
+    display:flex;
+    gap:12px;
+    align-items:flex-start;
+    background:var(--white);
+  }
+  .script-step:last-child{margin-bottom:0;}
+  .script-step input[type=checkbox]{
+    width:18px; height:18px; margin-top:2px; accent-color:var(--ah-blue); flex:none; cursor:pointer;
+  }
+  .script-step .step-num{
+    flex:none; width:22px; height:22px; border-radius:50%;
+    background:var(--ah-050); color:var(--ah-blue-dark); font-weight:800; font-size:11.5px;
+    display:flex; align-items:center; justify-content:center; margin-top:1px;
+  }
+  .script-step .step-body{flex:1; min-width:0;}
+  .script-step .step-title{font-size:13.5px; font-weight:700; color:var(--ink); margin-bottom:4px;}
+  .script-step .step-script{
+    font-size:12.8px; color:var(--slate); font-style:italic;
+    background:#FAFBFC; border-left:3px solid var(--ah-teal);
+    padding:8px 10px; border-radius:0 6px 6px 0; margin-bottom:7px;
+  }
+  .script-step .step-status{font-size:12.3px; color:var(--success); font-weight:600; display:flex; gap:6px; align-items:flex-start;}
+  .script-step .step-status svg{flex:none; margin-top:2px;}
+  .script-step.done{background:var(--success-bg); border-color:#C7E6D2;}
+
+  /* Call notes */
+  textarea#callNotes{
+    width:100%; min-height:132px; font-family:inherit; font-size:13px; color:var(--ink);
+    border:1px solid var(--line); border-radius:8px; padding:12px; resize:vertical;
+  }
+  textarea#callNotes:focus{outline:none; border-color:var(--ah-blue); box-shadow:0 0 0 3px var(--ah-050);}
+
+  .footer-row{display:flex; align-items:center; justify-content:space-between; margin-top:16px; flex-wrap:wrap; gap:12px;}
+  .save-note{font-size:12px; color:var(--slate);}
+  .btn-row{display:flex; gap:10px; flex-wrap:wrap;}
+  .btn-primary{
+    background:var(--ah-blue); color:var(--white); border:none; border-radius:8px;
+    padding:11px 20px; font-size:13.5px; font-weight:700; letter-spacing:0.2px; cursor:pointer;
+  }
+  .btn-primary:hover{background:var(--ah-blue-dark);}
+  .btn-primary:active{transform:translateY(1px);}
+  .btn-secondary{
+    background:var(--white); color:var(--ah-blue); border:1px solid var(--line); border-radius:8px;
+    padding:10px 18px; font-size:13px; font-weight:600; cursor:pointer;
+  }
+  .btn-secondary:hover{background:var(--ah-050);}
+  .btn-cardinal{
+    background:var(--ch-red); color:var(--white); border:none; border-radius:8px;
+    padding:10px 18px; font-size:13px; font-weight:700; cursor:pointer;
+  }
+  .btn-cardinal:hover{background:var(--ch-red-dark);}
+
+  .toast{
+    position:fixed; bottom:22px; left:50%; transform:translate(-50%,12px);
+    background:var(--ah-blue-dark); color:#fff; padding:11px 20px; border-radius:8px;
+    font-size:13px; font-weight:600; box-shadow:0 8px 24px rgba(0,0,0,0.25);
+    opacity:0; pointer-events:none; transition:opacity .25s ease, transform .25s ease;
+    z-index:50;
+  }
+  .toast.show{opacity:1; transform:translate(-50%,0);}
+
+  .disclaimer{
+    font-size:11.3px; color:var(--slate); font-style:italic; text-align:center;
+    margin-top:22px; padding-top:16px; border-top:1px solid var(--line);
+  }
+
+  @media print{
+    .btn-primary,.btn-secondary,.btn-cardinal,.toast,.call-status{display:none !important;}
+    body{background:#fff;}
+  }
+</style>
+</head>
+<body>
+<div class="top-ribbon"></div>
+<div class="app">
+
+  <header>
+    <div class="co-brand">
+      <div class="brand-block">
+        <svg width="30" height="30" viewBox="0 0 40 40" aria-hidden="true">
+          <circle cx="20" cy="20" r="19" fill="url(#ahGrad)"></circle>
+          <path d="M20 10c-5.5 4.2-9 8.2-9 12.4A9 9 0 0 0 20 31a9 9 0 0 0 9-8.6c0-4.2-3.5-8.2-9-12.4z" fill="#fff"></path>
+          <path d="M20 15.2c-3.1 2.6-4.9 5-4.9 7.2a4.9 4.9 0 0 0 9.8 0c0-2.2-1.8-4.6-4.9-7.2z" fill="var(--ah-blue)"></path>
+          <defs>
+            <linearGradient id="ahGrad" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse">
+              <stop offset="0" stop-color="#00A99D"></stop>
+              <stop offset="1" stop-color="#0B5FA5"></stop>
+            </linearGradient>
+          </defs>
+        </svg>
+        <div class="adapt-word"><span class="a1">adapt</span><span class="a2">health</span></div>
+      </div>
+      <div class="brand-divider"></div>
+      <div class="brand-block">
+        <svg width="28" height="28" viewBox="0 0 40 40" aria-hidden="true">
+          <path d="M6 6 C 16 10, 18 18, 20 34 C 22 18, 24 10, 34 6 C 30 16, 26 22, 20 24 C 14 22, 10 16, 6 6 Z" fill="var(--ch-red)"></path>
+        </svg>
+        <div class="cardinal-word"><span>Cardinal</span> Health</div>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="call-status"><span class="pulse-dot"></span>Active Call &mdash; Diabetes Resupply</div>
+      <div class="co-brand-tag">AdaptHealth Diabetes Care &middot; a Cardinal Health company</div>
+    </div>
+  </header>
+
+  <div class="page-title">
+    <h1>Diabetes Supply Resupply &mdash; Order Console</h1>
+    <p>Agent script &amp; order management workspace for monthly diabetes testing supply resupply calls.</p>
+  </div>
+
+  <div class="meta-strip">
+    <div class="meta-item"><div class="k">Case #</div><div class="v">CS-118842</div></div>
+    <div class="meta-item"><div class="k">Program</div><div class="v">Diabetes Resupply</div></div>
+    <div class="meta-item"><div class="k">Channel</div><div class="v">Inbound Phone</div></div>
+    <div class="meta-item"><div class="k">Call Date</div><div class="v" id="callDate">&mdash;</div></div>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <h2>Customer</h2>
+      <div class="caller-name">Liam O&rsquo;Malley</div>
+      <div class="caller-sub">Diabetes Care Patient &middot; Standing Monthly Resupply</div>
+
+      <div class="verify-badge">
+        <span class="icon">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M4 12.5 L9.5 18 L20 5" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+        <div class="text">
+          <div class="t1">Identity Verified</div>
+          <div class="t2">Confirmed via date of birth prior to account access</div>
+        </div>
+      </div>
+
+      <dl class="info">
+        <dt>Patient ID</dt><dd>AH-0447281</dd>
+        <dt>Date of Birth</dt><dd>11/29/1965 <span style="color:var(--slate); font-weight:400;">(age 60)</span></dd>
+        <dt>Phone</dt><dd>(630) 555-0148</dd>
+        <dt>Email</dt><dd><a href="mailto:liam.omalley@sample-email.com">liam.omalley@sample-email.com</a></dd>
+        <dt>Diagnosis</dt><dd>Type 2 Diabetes Mellitus <span style="color:var(--slate); font-weight:400;">(ICD-10 E11.9)</span></dd>
+        <dt>Provider</dt><dd>Dr. Sarah Chen, MD &middot; Glen Ellyn Family Medicine</dd>
+      </dl>
+    </div>
+
+    <div class="card">
+      <h2>Call Summary</h2>
+      <dl class="info">
+        <dt>Reason</dt><dd>Monthly diabetes supply resupply</dd>
+        <dt>Outcome</dt><dd><span class="badge low">Order Placed</span></dd>
+        <dt>Insurance</dt><dd><span class="badge low">No changes</span></dd>
+        <dt>Provider</dt><dd><span class="badge low">No changes</span></dd>
+        <dt>Supply Issues</dt><dd><span class="badge low">None reported</span></dd>
+        <dt>Address</dt><dd><span class="badge info">Updated &mdash; relocation</span></dd>
+        <dt>Confirmation</dt><dd><span class="badge low">Text sent</span></dd>
+      </dl>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Insurance on File<span class="h2-sub">Read only &middot; confirmed unchanged this call</span></h2>
+
+    <div class="coverage-panel">
+      <div class="coverage-head">
+        <div class="coverage-title">Medicare Part B<span class="coverage-sub">Primary &middot; Durable Medical Equipment / Diabetes Supplies</span></div>
+        <span class="badge low">Active</span>
+      </div>
+      <dl class="coverage-meta">
+        <dt>Member ID</dt><dd class="mono">4TE5-MK72-B</dd>
+        <dt>Policy Holder</dt><dd>Liam O&rsquo;Malley</dd>
+        <dt>Effective</dt><dd>Jan 1, 2024</dd>
+        <dt>Relationship</dt><dd>Self</dd>
+        <dt>Utilization</dt><dd>Within 30-day resupply window</dd>
+      </dl>
+    </div>
+
+    <div class="coverage-panel">
+      <div class="coverage-head">
+        <div class="coverage-title">BlueCross BlueShield of Illinois<span class="coverage-sub">Secondary &middot; Medigap Plan G</span></div>
+        <span class="badge low">Active</span>
+      </div>
+      <dl class="coverage-meta">
+        <dt>Member ID</dt><dd class="mono">XJC-804552117</dd>
+        <dt>Group #</dt><dd class="mono">N/A</dd>
+        <dt>Policy Holder</dt><dd>Liam O&rsquo;Malley</dd>
+        <dt>Relationship</dt><dd>Self</dd>
+      </dl>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Shipping Address Update<span class="h2-sub">Changed during this call</span></h2>
+    <div class="addr-compare">
+      <div class="addr-box old">
+        <div class="lbl">Previous Address</div>
+        <div class="addr">123 Main Street<br>Springfield, Illinois 62701</div>
+      </div>
+      <div class="addr-arrow">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M4 12h15M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="addr-box new">
+        <div class="lbl">Updated Address</div>
+        <div class="addr">456 Maple Street<br>Glen Ellyn, Illinois 60137</div>
+      </div>
+    </div>
+    <div class="reason-note"><strong>Reason:</strong> Customer relocated. Address updated on account and applied to this order and future recurring resupply shipments.</div>
+  </div>
+
+  <div class="card">
+    <h2>Most Recent Order<span class="h2-sub">Placed this call</span></h2>
+
+    <table class="order-items">
+      <thead>
+        <tr><th>Item</th><th>Qty</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <div class="item-name">Blood Glucose Test Strips (50ct)</div>
+            <div class="item-sub">Standing resupply item &middot; reviewed &amp; approved by customer</div>
+          </td>
+          <td><span class="qty-pill">2</span></td>
+        </tr>
+        <tr>
+          <td>
+            <div class="item-name">Lancets (100ct)</div>
+            <div class="item-sub">Standing resupply item &middot; reviewed &amp; approved by customer</div>
+          </td>
+          <td><span class="qty-pill">1</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="order-meta-row">
+      <div><div class="k">Order Number</div><div class="v mono">ORD-100234</div></div>
+      <div><div class="k">Order Date</div><div class="v" id="orderDate">&mdash;</div></div>
+      <div><div class="k">Status</div><div class="v"><span class="badge low">Confirmed</span></div></div>
+      <div><div class="k">Ship To</div><div class="v" style="font-weight:600;">Glen Ellyn, IL 60137</div></div>
+    </div>
+
+    <div class="delivery-eta">
+      <div>
+        <div class="t1">Estimated Delivery: September 21, 2026</div>
+        <div class="t2">Shipping to updated address &middot; text confirmation sent to (630) 555-0148</div>
+      </div>
+      <span class="badge info" id="etaCountdown">&mdash;</span>
+    </div>
+
+    <table class="history-table">
+      <thead>
+        <tr><th>Order #</th><th>Date</th><th>Items</th><th>Shipped To</th><th>Status</th></tr>
+      </thead>
+      <tbody>
+        <tr class="current">
+          <td>ORD-100234</td><td id="histDate0">&mdash;</td><td>Test Strips x2, Lancets x1</td><td>Glen Ellyn, IL</td><td><span class="badge low">Confirmed</span></td>
+        </tr>
+        <tr>
+          <td>ORD-098650</td><td>Aug 18, 2026</td><td>Test Strips x2, Lancets x1</td><td>Springfield, IL</td><td><span class="badge low">Delivered</span></td>
+        </tr>
+        <tr>
+          <td>ORD-097102</td><td>Jul 19, 2026</td><td>Test Strips x2, Lancets x1</td><td>Springfield, IL</td><td><span class="badge low">Delivered</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2>Agent Call Script<span class="h2-sub">Step-by-step guide for this resupply call</span></h2>
+
+    <div class="progress-wrap">
+      <div class="progress-bar"><div id="progressFill" style="width:0%"></div></div>
+      <div class="progress-label" id="progressLabel">0 of 9 complete</div>
+    </div>
+
+    <div id="scriptSteps">
+      <div class="script-step" data-step>
+        <input type="checkbox" checked>
+        <span class="step-num">1</span>
+        <div class="step-body">
+          <div class="step-title">Greeting &amp; Confirm Intent</div>
+          <div class="step-script">&ldquo;Thank you for calling AdaptHealth Diabetes Care, a Cardinal Health company. My name is [Agent Name]. I understand you&rsquo;re calling to resupply your diabetes testing supplies &mdash; is that correct?&rdquo;</div>
+          <div class="step-status">Confirmed &mdash; customer called to resupply diabetes supplies.</div>
+        </div>
+      </div>
+
+      <div class="script-step" data-step>
+        <input type="checkbox" checked>
+        <span class="step-num">2</span>
+        <div class="step-body">
+          <div class="step-title">Verify Identity</div>
+          <div class="step-script">&ldquo;Before we continue, I need to verify your identity. Can you confirm your date of birth for me?&rdquo;</div>
+          <div class="step-status">Identity verified using date of birth (11/29/1965).</div>
+        </div>
+      </div>
+
+      <div class="script-step" data-step>
+        <input type="checkbox" checked>
+        <span class="step-num">3</span>
+        <div class="step-body">
+          <div class="step-title">Review Resupply Items</div>
+          <div class="step-script">&ldquo;I have your standing order pulled up. Today that&rsquo;s Blood Glucose Test Strips, 50-count, quantity 2, and Lancets, 100-count, quantity 1. Would you like to proceed with these same items and quantities?&rdquo;</div>
+          <div class="step-status">Customer reviewed and approved resupply items and quantities.</div>
+        </div>
+      </div>
+
+      <div class="script-step" data-step>
+        <input type="checkbox" checked>
+        <span class="step-num">4</span>
+        <div class="step-body">
+          <div class="step-title">Confirm Shipping Address</div>
+          <div class="step-script">&ldquo;Let&rsquo;s confirm your shipping address. I have 123 Main Street, Springfield, Illinois 62701 on file &mdash; is that still correct?&rdquo; <em>(If not)</em> &ldquo;No problem &mdash; can you give me your new complete address?&rdquo;</div>
+          <div class="step-status">Address updated to 456 Maple Street, Glen Ellyn, Illinois 60137 due to relocation.</div>
+        </div>
+      </div>
+
+      <div class="script-step" data-step>
+        <input type="checkbox" checked>
+        <span class="step-num">5</span>
+        <div class="step-body">
+          <div class="step-title">Confirm Insurance &amp; Provider</div>
+          <div class="step-script">&ldquo;Has there been any change to your insurance coverage or your prescribing doctor since your last order?&rdquo;</div>
+          <div class="step-status">Customer confirmed no insurance or doctor changes.</div>
+        </div>
+      </div>
+
+      <div class="script-step" data-step>
+        <input type="checkbox" checked>
+        <span class="step-num">6</span>
+        <div class="step-body">
+          <div class="step-title">Confirm No Supply Concerns</div>
+          <div class="step-script">&ldquo;Are you having any issues with your meter or current supplies I should note before we finish up?&rdquo;</div>
+          <div class="step-status">Customer confirmed no supply concerns.</div>
+        </div>
+      </div>
+
+      <div class="script-step" data-step>
+        <input type="checkbox" checked>
+        <span class="step-num">7</span>
+        <div class="step-body">
+          <div class="step-title">Place Order</div>
+          <div class="step-script">&ldquo;Great &mdash; I&rsquo;ve submitted your order. Your order number is ORD-100234, and it&rsquo;s estimated to arrive by September 21, 2026.&rdquo;</div>
+          <div class="step-status">Order ORD-100234 placed successfully &middot; ETA September 21, 2026.</div>
+        </div>
+      </div>
+
+      <div class="script-step" data-step>
+        <input type="checkbox" checked>
+        <span class="step-num">8</span>
+        <div class="step-body">
+          <div class="step-title">Send Confirmation</div>
+          <div class="step-script">&ldquo;I&rsquo;m sending you a text message right now with your order number and delivery date for your records.&rdquo;</div>
+          <div class="step-status">Text message confirmation sent.</div>
+        </div>
+      </div>
+
+      <div class="script-step" data-step>
+        <input type="checkbox" checked>
+        <span class="step-num">9</span>
+        <div class="step-body">
+          <div class="step-title">Closing</div>
+          <div class="step-script">&ldquo;Is there anything else I can help you with today? Thank you for choosing AdaptHealth Diabetes Care, a Cardinal Health company &mdash; have a great day!&rdquo;</div>
+          <div class="step-status">Call closed &mdash; no further requests.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Call Notes</h2>
+    <textarea id="callNotes">Customer called to resupply diabetes supplies. Identity verified using date of birth (11/29/1965). Customer reviewed and approved resupply items: Blood Glucose Test Strips (50ct) quantity 2, and Lancets (100ct) quantity 1. Customer updated shipping address from 123 Main Street, Springfield, Illinois 62701 to 456 Maple Street, Glen Ellyn, Illinois 60137 due to relocation. Order was successfully placed with order number ORD-100234 and estimated delivery date of September 21, 2026. Customer confirmed no insurance or doctor changes and no supply concerns. Text message confirmation was sent.</textarea>
+
+    <div class="footer-row">
+      <span class="save-note">Notes save to Case #CS-118842</span>
+      <div class="btn-row">
+        <button type="button" class="btn-secondary" id="printBtn">Print Summary</button>
+        <button type="button" class="btn-cardinal" id="resendBtn">Resend Text Confirmation</button>
+        <button type="button" class="btn-primary" id="saveBtn">Save Call Notes</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="disclaimer">Demo interface for illustrative purposes only. AdaptHealth and Cardinal Health names, colors, and marks are used here as a stylized reference and are trademarks of their respective owners. Patient, insurance, and order data shown are sample/placeholder values.</div>
+</div>
+
+<div class="toast" id="toast">Saved</div>
+
+<script>
+  const today = new Date();
+  const fmt = (d) => d.toLocaleDateString('en-US', { month:'long', day:'numeric', year:'numeric' });
+
+  document.getElementById('callDate').textContent = fmt(today);
+  document.getElementById('orderDate').textContent = fmt(today) + ' (Today)';
+  document.getElementById('histDate0').textContent = fmt(today) + ' (Today)';
+
+  const eta = new Date('2026-09-21T00:00:00');
+  const msPerDay = 1000 * 60 * 60 * 24;
+  const daysLeft = Math.ceil((eta - today) / msPerDay);
+  const etaEl = document.getElementById('etaCountdown');
+  etaEl.textContent = daysLeft > 0 ? (daysLeft + ' day' + (daysLeft === 1 ? '' : 's') + ' remaining') : (daysLeft === 0 ? 'Arriving today' : 'Delivered');
+
+  const stepEls = Array.from(document.querySelectorAll('.script-step'));
+  const progressFill = document.getElementById('progressFill');
+  const progressLabel = document.getElementById('progressLabel');
+
+  function updateProgress(){
+    const total = stepEls.length;
+    let done = 0;
+    stepEls.forEach(step => {
+      const cb = step.querySelector('input[type=checkbox]');
+      step.classList.toggle('done', cb.checked);
+      if (cb.checked) done++;
+    });
+    progressFill.style.width = Math.round((done/total)*100) + '%';
+    progressLabel.textContent = done + ' of ' + total + ' complete';
+  }
+
+  stepEls.forEach(step => {
+    step.querySelector('input[type=checkbox]').addEventListener('change', updateProgress);
+  });
+  updateProgress();
+
+  const toast = document.getElementById('toast');
+  function showToast(msg){
+    toast.textContent = msg;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 2400);
+  }
+
+  document.getElementById('saveBtn').addEventListener('click', () => showToast('Call notes saved to Case #CS-118842'));
+  document.getElementById('resendBtn').addEventListener('click', () => showToast('Text confirmation resent to (630) 555-0148'));
+  document.getElementById('printBtn').addEventListener('click', () => window.print());
+</script>
+</body>
+</html>
