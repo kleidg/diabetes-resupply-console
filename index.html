@@ -407,7 +407,7 @@
     <div class="meta-item"><div class="k">Case #</div><div class="v">CS-118842</div></div>
     <div class="meta-item"><div class="k">Program</div><div class="v">Diabetes Resupply</div></div>
     <div class="meta-item"><div class="k">Channel</div><div class="v">Inbound Phone</div></div>
-    <div class="meta-item"><div class="k">Call Date</div><div class="v" id="callDate">&mdash;</div></div>
+    <div class="meta-item"><div class="k">Call Date</div><div class="v">September 18, 2026</div></div>
   </div>
 
   <div class="grid">
@@ -526,7 +526,7 @@
 
     <div class="order-meta-row">
       <div><div class="k">Order Number</div><div class="v mono">ORD-100234</div></div>
-      <div><div class="k">Order Date</div><div class="v" id="orderDate">&mdash;</div></div>
+      <div><div class="k">Order Date</div><div class="v">September 18, 2026</div></div>
       <div><div class="k">Status</div><div class="v"><span class="badge low">Confirmed</span></div></div>
       <div><div class="k">Ship To</div><div class="v" style="font-weight:600;">Glen Ellyn, IL 60137</div></div>
     </div>
@@ -545,7 +545,7 @@
       </thead>
       <tbody>
         <tr class="current">
-          <td>ORD-100234</td><td id="histDate0">&mdash;</td><td>Test Strips x2, Lancets x1</td><td>Glen Ellyn, IL</td><td><span class="badge low">Confirmed</span></td>
+          <td>ORD-100234</td><td>September 18, 2026</td><td>Test Strips x2, Lancets x1</td><td>Glen Ellyn, IL</td><td><span class="badge low">Confirmed</span></td>
         </tr>
         <tr>
           <td>ORD-098650</td><td>Aug 18, 2026</td><td>Test Strips x2, Lancets x1</td><td>Springfield, IL</td><td><span class="badge low">Delivered</span></td>
@@ -678,18 +678,12 @@
 <div class="toast" id="toast">Saved</div>
 
 <script>
-  const today = new Date();
-  const fmt = (d) => d.toLocaleDateString('en-US', { month:'long', day:'numeric', year:'numeric' });
-
-  document.getElementById('callDate').textContent = fmt(today);
-  document.getElementById('orderDate').textContent = fmt(today) + ' (Today)';
-  document.getElementById('histDate0').textContent = fmt(today) + ' (Today)';
-
+  const orderDate = new Date('2026-09-18T00:00:00');
   const eta = new Date('2026-09-21T00:00:00');
   const msPerDay = 1000 * 60 * 60 * 24;
-  const daysLeft = Math.ceil((eta - today) / msPerDay);
+  const daysLeft = Math.round((eta - orderDate) / msPerDay);
   const etaEl = document.getElementById('etaCountdown');
-  etaEl.textContent = daysLeft > 0 ? (daysLeft + ' day' + (daysLeft === 1 ? '' : 's') + ' remaining') : (daysLeft === 0 ? 'Arriving today' : 'Delivered');
+  etaEl.textContent = daysLeft > 0 ? (daysLeft + ' day' + (daysLeft === 1 ? '' : 's') + ' from order') : (daysLeft === 0 ? 'Same-day delivery' : 'Delivered');
 
   const stepEls = Array.from(document.querySelectorAll('.script-step'));
   const progressFill = document.getElementById('progressFill');
